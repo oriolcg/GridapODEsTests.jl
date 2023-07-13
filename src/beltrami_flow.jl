@@ -94,7 +94,11 @@ function beltrami_flow_solver(params)
 
   # Postprocess
   for (xₕ,t) in xₕₜ
+    eᵤ = √( ∑( ∫( (u(t)-xₕ[1])⋅(u(t)-xₕ[1]) )dΩ ) )
+    eₚ = √( ∑( ∫( (p-xₕ[2])⋅(p-xₕ[2]) )dΩ ) )
     println("t = $t\n ========================")
+    println("eᵤ = $eᵤ")
+    println("eₚ = $eₚ")
   end
 
   println("Finished successfully!")
