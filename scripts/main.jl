@@ -16,7 +16,7 @@ Path of active project: $(projectdir())
 
 using .BeltramiFlow
 
-params = BeltramiParams()
+params = BeltramiParams(vtk_output=true)
 beltrami_flow_solver(params)
 
 end
