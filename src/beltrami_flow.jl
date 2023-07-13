@@ -27,6 +27,10 @@ export beltrami_flow_solver
 # """
 function beltrami_flow_solver(params)
 
+  println("Executing test with the following settings:")
+  println("-------------------------------------------")
+  println(params)
+
   # Unpack variables
   @unpack a, d, vtk_output = params
 
@@ -87,22 +91,24 @@ function beltrami_flow_solver(params)
   nls = NLSolver(show_trace=true,method=:newton,iterations=15)
   if ode_solver_type == :ThetaMethod
     ode_solver = ThetaMethod(nls,dt,0.5)
+  else
+    error("ODE solver type not implemented")
   end
 
   # Solution
   xₕₜ = solve(ode_solver,op,xₕ₀,0.0,tf)
 
   # Postprocess
+  eᵤ = 0.0
+  eₚ = 0.0
   for (xₕ,t) in xₕₜ
-    eᵤ = √( ∑( ∫( (u(t)-xₕ[1])⋅(u(t)-xₕ[1]) )dΩ ) )
-    eₚ = √( ∑( ∫( (p-xₕ[2])⋅(p-xₕ[2]) )dΩ ) )
-    println("t = $t\n ========================")
-    println("eᵤ = $eᵤ")
-    println("eₚ = $eₚ")
+    eᵤ += √( ∑( ∫( (u(t)-xₕ[1])⋅(u(t)-xₕ[1]) )dΩ ) )
+    eₚ += √( ∑( ∫( (p-xₕ[2])⋅(p-xₕ[2]))dΩ ) )
+    println("t = $t \n ========================")
   end
 
   println("Finished successfully!")
-  return nothing
+  return eᵤ,eₚ
 end
 
 """
@@ -119,7 +125,7 @@ Struct with all required parameters in `beltrami_flow_solver`
   vtk_output::Bool = false
   ν::Real = 0.01
   dt::Real = 1.0e-2
-  tf::Real = 2.0e-2
+  tf::Real = 1.0e-2
 end
 
 end
