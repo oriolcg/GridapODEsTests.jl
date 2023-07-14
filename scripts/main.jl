@@ -24,14 +24,28 @@ using .ManufacturedLinear
 # Initial run
 params = ManufacturedLinearParams(vtk_output=true)
 manufactured_linear_solver(params)
+params = ManufacturedLinearParams(ode_solver_type=:GeneralizedAlpha)
+manufactured_linear_solver(params)
+params = ManufacturedLinearParams(ode_solver_type=:RK_CN)
+manufactured_linear_solver(params)
+params = ManufacturedLinearParams(ode_solver_type=:RK_SDIRK)
+manufactured_linear_solver(params)
 
+hola
 # Timings
 const to = TimerOutput()
 
 # ODE solvers
-ode_solver_types = [:ThetaMethod]#,:GeneralizedAlpha,:RK_CN,:RK_SDIRK]
+ode_solver_types = [:ThetaMethod,:GeneralizedAlpha]#,:RK_CN,:RK_SDIRK]
 dts = [0.1/(2^i) for i in 0:3]
 
+# Initialize plots
+eu_vs_dt = plot(title="eᵤ vs dt")
+eu_vs_time = plot(title="eu vs time")
+time_vs_dt = plot(title="time vs dt")
+eu_vs_mem = plot(title="eᵤ vs memory")
+
+# Loop over solvers
 for ode_solver_type in ode_solver_types
 
   # Initialize output vectors
@@ -53,20 +67,22 @@ for ode_solver_type in ode_solver_types
   end
 
   # Plotting
-  eu_vs_dt = plot(dts,eus,xaxis=:log10,yaxis=:log10,label="$ode_solver_type")
-  plot!(eu_vs_dt,dts,1.0e-3 .* dts .^2,label="dt²",color=:black,ls=:dash)
-  plot!(eu_vs_dt,dts,1.0e-2 .* dts .^3,label="dt³",color=:black,ls=:dashdot)
-  eu_vs_dt_file = plotsdir("eu_vs_dt-$ode_solver_type")
-  eu_vs_time = plot(times,eus,xaxis=:log10,yaxis=:log10,label="$ode_solver_type")
-  eu_vs_time_file = plotsdir("eu_vs_time-$ode_solver_type")
-  time_vs_dt = plot(dts,times,xaxis=:log10,yaxis=:log10,label="$ode_solver_type")
-  time_vs_dt_file = plotsdir("time_vs_dt-$ode_solver_type")
-  eu_vs_mem = plot(memory,eus,xaxis=:log10,yaxis=:log10,label="$ode_solver_type")
-  eu_vs_mem_file = plotsdir("eu_vs_memory-$ode_solver_type")
-  savefig(eu_vs_dt,eu_vs_dt_file)
-  savefig(eu_vs_time,eu_vs_time_file)
-  savefig(eu_vs_mem,eu_vs_mem_file)
-  savefig(time_vs_dt,time_vs_dt_file)
+  plot!(eu_vs_dt,dts,eus,xaxis=:log10,yaxis=:log10,label="$ode_solver_type")
+  plot!(eu_vs_time,times,eus,xaxis=:log10,yaxis=:log10,label="$ode_solver_type")
+  plot!(time_vs_dt,dts,times,xaxis=:log10,yaxis=:log10,label="$ode_solver_type")
+  plot!(eu_vs_mem,memory,eus,xaxis=:log10,yaxis=:log10,label="$ode_solver_type")
 end
+
+# Finalize plots
+plot!(eu_vs_dt,dts,1.0e-3 .* dts .^2,label="dt²",color=:black,ls=:dash)
+plot!(eu_vs_dt,dts,1.0e-2 .* dts .^3,label="dt³",color=:black,ls=:dashdot)
+eu_vs_dt_file = plotsdir("eu_vs_dt")
+eu_vs_time_file = plotsdir("eu_vs_time")
+time_vs_dt_file = plotsdir("time_vs_dt")
+eu_vs_mem_file = plotsdir("eu_vs_memory")
+savefig(eu_vs_dt,eu_vs_dt_file)
+savefig(eu_vs_time,eu_vs_time_file)
+savefig(eu_vs_mem,eu_vs_mem_file)
+savefig(time_vs_dt,time_vs_dt_file)
 
 end

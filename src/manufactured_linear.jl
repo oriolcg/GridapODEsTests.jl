@@ -73,19 +73,32 @@ function manufactured_linear_solver(params)
   b(a,u,v) = 0.5*( (a⋅∇(u))⋅v - (a⋅∇(v))⋅u )
   # res(t,(u,p),(v,q)) = ∫( ∂t(u)⋅v + ν*(∇(u)⊙∇(v)) - p*(∇⋅v) + q*(∇⋅u) )dΩ
   res(t,(u,p),(v,q)) = ∫( ∂t(u)⋅v + b(u,u,v) + ν*(∇(u)⊙∇(v)) - p*(∇⋅v) + q*(∇⋅u) )dΩ
+  m(t,(uₜ,p),(v,q)) = ∫( uₜ⋅v )dΩ
+  rhs(t,(u,p),(v,q)) = ∫( - b(u,u,v) - ν*(∇(u)⊙∇(v)) + p*(∇⋅v) - q*(∇⋅u) )dΩ
   op = TransientFEOperator(res,X,Y)
 
   # ODE solver
   @unpack ode_solver_type, dt, tf = params
   nls = NLSolver(show_trace=true,method=:newton,iterations=15)
+  sol₀ = xₕ₀
   if ode_solver_type == :ThetaMethod
     ode_solver = ThetaMethod(nls,dt,0.5)
+  elseif ode_solver_type == :GeneralizedAlpha
+    dxₕ₀ = interpolate_everywhere([∂t(u)(0.0),0.0],X(0.0))
+    sol₀ = (xₕ₀,dxₕ₀)
+    ode_solver = GeneralizedAlpha(nls,dt,1.0)
+  elseif ode_solver_type == :RK_CN
+    op = TransientRungeKuttaFEOperator(m,rhs,X,Y)
+    ode_solver = RungeKutta(nls,dt,:CN_2_0_2)
+  elseif ode_solver_type == :RK_SDIRK
+    op = TransientRungeKuttaFEOperator(m,rhs,X,Y)
+    ode_solver = RungeKutta(nls,dt,:SDIRK_2_0_2)
   else
     error("ODE solver type not implemented")
   end
 
   # Solution
-  xₕₜ = solve(ode_solver,op,xₕ₀,0.0,tf)
+  xₕₜ = solve(ode_solver,op,sol₀,0.0,tf)
 
   # Postprocess
   global eᵤ,eₚ
