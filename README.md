@@ -50,7 +50,7 @@
 
 `GridapODEsTests.jl` is a [Julia Language](https://julialang.org/) repository that serves as a test bench for time integration schemes implemented in [Gridap.jl](https://github.com/gridap/Gridap.jl). In this repository there are tests to assess the accuracy and performance (time and memory consumption) of different ODE solvers for time-dependent PDEs using a Finite Element framework.
 
-It is authored by [Oriol Colomes](https://oriolcolomes.com).
+It is authored by [Oriol Colomés](https://oriolcolomes.com).
 
 ### Built With
 
@@ -80,6 +80,8 @@ To (locally) reproduce this project, do the following:
 
 This will install all necessary packages for you to be able to run the scripts and everything should work out of the box, including correctly finding local paths.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 <!-- USAGE EXAMPLES -->
 ## Usage
 
@@ -89,6 +91,61 @@ using DrWatson
 @quickactivate "GridapODEsTests.jl"
 ```
 which auto-activate the project and enable local path handling from DrWatson.
+
+To run a test you simply need to include one of the main files in `scripts/` folder. For example, tu run the tests for manufactured analytical solutions for linear elasticity, execute
+```julia
+include("mainElasticity.jl")
+```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- ROADMAP -->
+## Roadmap
+
+- [x] Manufactured solutions for linear elasticity
+- [ ] Generalize manufactured solution for linear elasticity
+- [ ] Manufactured solution fol incompressible Navier-Stokes
+    - [ ] Tests with schemes that don't require update
+    - [ ] Tests with schemes that require update (requires handling of index 2 DAEs)
+- [ ] Beltrami flow test
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- CONTRIBUTING -->
+## Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+If you have a suggestion that would make this thest bench better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+
+Don't forget to give the project a star! Thanks again!
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- LICENSE -->
+## License
+
+Distributed under the MIT License. See `LICENSE.txt` for more information.
+
+<!-- CONTACT -->
+## Contact
+
+Oriol Colomés - [@OriolCG](https://twitter.com/oriolcg) - j.o.colomesgene@tudelft.nl
+
+<!-- Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name) -->
+
+
+<!-- ACKNOWLEDGMENTS -->
+## Acknowledgments
+
+* [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
