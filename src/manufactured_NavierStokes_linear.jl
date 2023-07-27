@@ -1,16 +1,16 @@
-module ManufacturedLinear
+module ManufacturedNavierStokesLinear
 using Parameters
 using Gridap
 using DrWatson
 
-export ManufacturedLinearParams
-export manufactured_linear_solver
+export ManufacturedNavierStokesLinearParams
+export manufactured_NavierStokes_linear_solver
 
 # """
-# manufactured_linear_solver(params) → ||eᵤ||ₗ₂, ||eₚ||ₗ₂
+# manufactured_NavierStokes_linear_solver(params) → ||eᵤ||ₗ₂, ||eₚ||ₗ₂
 
 # This function computes the L2-norm of the velocity and pressure error for
-# the ManufacturedLinear flow problem.
+# the ManufacturedNavierStokesLinear flow problem.
 
 # Manufactured lnear formulation:
 # ```math
@@ -21,7 +21,7 @@ export manufactured_linear_solver
 # p(x, y) = x + y.
 # ```
 # """
-function manufactured_linear_solver(params)
+function manufactured_NavierStokes_linear_solver(params)
 
   println("Executing test with the following settings:")
   println("-------------------------------------------")
@@ -89,10 +89,10 @@ function manufactured_linear_solver(params)
     ode_solver = GeneralizedAlpha(nls,dt,1.0)
   elseif ode_solver_type == :RK_CN
     op = TransientRungeKuttaFEOperator(m,rhs,X,Y)
-    ode_solver = RungeKutta(nls,dt,:CN_2_0_2)
+    ode_solver = RungeKutta(nls,LUSolver(),dt,:CN_2_0_2)
   elseif ode_solver_type == :RK_SDIRK
     op = TransientRungeKuttaFEOperator(m,rhs,X,Y)
-    ode_solver = RungeKutta(nls,dt,:SDIRK_2_0_2)
+    ode_solver = RungeKutta(nls,LUSolver(),dt,:SDIRK_2_0_2)
   else
     error("ODE solver type not implemented")
   end
@@ -113,11 +113,11 @@ function manufactured_linear_solver(params)
 end
 
 """
-ManufacturedLinearParams
+ManufacturedNavierStokesLinearParams
 
-Struct with all required parameters in `manufactured_linear_solver`
+Struct with all required parameters in `manufactured_NavierStokes_linear_solver`
 """
-@with_kw struct ManufacturedLinearParams
+@with_kw struct ManufacturedNavierStokesLinearParams
   ode_solver_type::Symbol = :ThetaMethod
   ne::Integer = 2
   order::Integer = 2

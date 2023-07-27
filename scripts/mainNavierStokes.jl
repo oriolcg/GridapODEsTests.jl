@@ -1,4 +1,4 @@
-module MainDriver
+module MainNavierStokesDriver
 
 using DrWatson
 using TimerOutputs
@@ -8,7 +8,7 @@ using Plots
 
 # Here you may include files from the source directory
 include(srcdir("beltrami_flow.jl"))
-include(srcdir("manufactured_linear.jl"))
+include(srcdir("manufactured_NavierStokes_linear.jl"))
 
 println(
 """
@@ -19,19 +19,18 @@ Path of active project: $(projectdir())
 )
 
 using .BeltramiFlow
-using .ManufacturedLinear
+using .ManufacturedNavierStokesLinear
 
 # Initial run
-params = ManufacturedLinearParams(vtk_output=true)
-manufactured_linear_solver(params)
-params = ManufacturedLinearParams(ode_solver_type=:GeneralizedAlpha)
-manufactured_linear_solver(params)
-params = ManufacturedLinearParams(ode_solver_type=:RK_CN)
-manufactured_linear_solver(params)
-params = ManufacturedLinearParams(ode_solver_type=:RK_SDIRK)
-manufactured_linear_solver(params)
+params = ManufacturedNavierStokesLinearParams(vtk_output=true)
+manufactured_NavierStokes_linear_solver(params)
+params = ManufacturedNavierStokesLinearParams(ode_solver_type=:GeneralizedAlpha)
+manufactured_NavierStokes_linear_solver(params)
+# params = ManufacturedNavierStokesLinearParams(ode_solver_type=:RK_CN)
+# manufactured_NavierStokes_linear_solver(params)
+# params = ManufacturedNavierStokesLinearParams(ode_solver_type=:RK_SDIRK)
+# manufactured_NavierStokes_linear_solver(params)
 
-hola
 # Timings
 const to = TimerOutput()
 
@@ -57,8 +56,8 @@ for ode_solver_type in ode_solver_types
   # Time convergence
   for dt in dts
     case = "$ode_solver_type"*"-$dt"
-    params = ManufacturedLinearParams(tf=0.2,dt=dt, ode_solver_type=ode_solver_type, ne=20)
-    eᵤ,eₚ = @timeit to case manufactured_linear_solver(params)
+    params = ManufacturedNavierStokesLinearParams(tf=0.2,dt=dt, ode_solver_type=ode_solver_type, ne=20)
+    eᵤ,eₚ = @timeit to case manufactured_NavierStokes_linear_solver(params)
     push!(eus,eᵤ)
     push!(eps,eₚ)
     println(to)
