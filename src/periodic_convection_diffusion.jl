@@ -13,21 +13,21 @@ This function computes the L2-norm of the error for the
 PeriodicConvectionDiffusion problem:
 
 ```math
-uₜ + (u⋅∇)u - νΔu = 0\qquad\text{in}\quad\Omega=[0,1]\times[0,1]
+uₜ + (u⋅∇)u - νΔu = 0
 ```
+
 with periodic boundaries and initial condition:
 
 ```math
-u(x, y, 0) = \begin{bmatrix}
-\sin(2\pi (x+y))+0.005\cos(2\pi (64x + 63y)) \\
-\sin(2\pi (x+y))+0.005\cos(2\pi (64x + 63y))
-\end{bmatrix}.
+u(x, y, 0) = [sin(2π (x+y)) + 0.005cos(2π (64x + 63y)),
+              sin(2π (x+y)) + 0.005cos(2π (64x + 63y))].
 ```
 
 The default parameters used in this test are based on the test in Section 5 of the paper
 [1] Ascher, Uri M., Steven J. Ruuth, and Raymond J. Spiteri. "Implicit-explicit Runge-Kutta methods for time-dependent partial differential equations." Applied Numerical Mathematics 25.2-3 (1997): 151-167.
+
 """
-function periodic_convection_diffusion_soler(params)
+function periodic_convection_diffusion_solver(params)
 
   println("Executing test with the following settings:")
   println("-------------------------------------------")
@@ -62,7 +62,7 @@ function periodic_convection_diffusion_soler(params)
   # Output initial solution
   if vtk_output
     filename = datadir("sims","u0_CD")
-    writevtk(uₕ₀,filename)
+    writevtk(Ω,filename,cellfields=["u0"=>uₕ₀])
   end
 
   # Measure
@@ -81,7 +81,7 @@ function periodic_convection_diffusion_soler(params)
 
   # ODE solver
   nls = NLSolver(show_trace=true,method=:newton,iterations=15)
-  ode_solver = ThetaMethod(nls,Δt,θ=0.5)
+  ode_solver = ThetaMethod(nls,Δt,0.5)
 
   # Solution
   uₕₜ = solve(ode_solver,op,uₕ₀,t0,tF)
