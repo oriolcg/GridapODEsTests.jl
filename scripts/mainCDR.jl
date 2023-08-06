@@ -21,6 +21,11 @@ using .PeriodicConvectionDiffusion
 
 # Initial run
 params = PeriodicConvectionDiffusionParams(vtk_output=true,ne=3)
-periodic_convection_diffusion_solver(params)
+uₕ = periodic_convection_diffusion_solver(params)
+params = PeriodicConvectionDiffusionParams(ne=3,Δt=0.001)
+uₕ_ref = periodic_convection_diffusion_solver(params)
+
+e = abs(uₕ-uₕ_ref)
+println("Finished successfully with error: $e")
 
 end

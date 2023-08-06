@@ -7,9 +7,9 @@ export PeriodicConvectionDiffusionParams
 export periodic_convection_diffusion_solver
 
 """
-periodic_convection_diffusion_solver(params) → ||e||ₗ₂
+periodic_convection_diffusion_solver(params) → ||u||ₗ₂
 
-This function computes the L2-norm of the error for the
+This function computes the L2-norm of the solution at the final time for the
 PeriodicConvectionDiffusion problem:
 
 ```math
@@ -77,7 +77,7 @@ function periodic_convection_diffusion_solver(params)
   # Time stepping
   @unpack Δt = params
   t0 = 0.0
-  tF = 0.5
+  tF = 0.1
 
   # ODE solver
   nls = NLSolver(show_trace=true,method=:newton,iterations=15)
@@ -87,15 +87,13 @@ function periodic_convection_diffusion_solver(params)
   uₕₜ = solve(ode_solver,op,uₕ₀,t0,tF)
 
   # Postprocess
-  e = 0.0
+  global uₕ_final
   for (uₕ,t) in uₕₜ
-    e += √(∑(∫( (u(t)-uₕ)⋅(u(t)-uₕ) )dΩ))
     println("t = $t \n ========================")
+    uₕ_final = √(∑(∫( uₕ⋅uₕ )dΩ))
   end
 
-  # Return Output
-  println("Finished successfully with error: $e")
-  return e
+  return uₕ_final
 
 end
 
